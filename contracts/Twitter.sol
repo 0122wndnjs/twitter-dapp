@@ -42,10 +42,7 @@ contract Twitter {
 
     // Method to add a Tweet
 
-    function addTweet(string memory tweetText, string memory tweetImg)
-        public
-        payable
-    {
+    function addTweet(string memory tweetText, string memory tweetImg) public payable {
         require(msg.value == (0.01 ether), "Please submit 0.01 MATIC");
         tweet storage newTweet = Tweets[counter];
         newTweet.tweetText = tweetText;
@@ -124,5 +121,21 @@ contract Twitter {
         require(Tweets[tweetId].tweeter == msg.sender, "You can only delete your own tweet");
         Tweets[tweetId].isDeleted = isDeleted;
         emit tweetDeleted(tweetId, isDeleted);
+    }
+
+    // Method to update user details
+
+    function updateUser(string memory newName, string memory newBio, string memory newProfileImg, string memory newProfileBanner) public {
+        user storage userData = Users[msg.sender];
+        userData.name = newName;
+        userData.bio = newBio;
+        userData.profileImg = newProfileImg;
+        userData.profileBanner = newProfileBanner;
+    }
+
+    // Method to get user detail
+
+    function getUser(address userAddress) public view returns (user memory) {
+        return Users[userAddress];
     }
 }
