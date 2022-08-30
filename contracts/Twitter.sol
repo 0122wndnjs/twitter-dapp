@@ -108,4 +108,21 @@ contract Twitter {
 
         return result;
     }
+
+    // Method to get a particular tweet
+
+    function getTweet(uint256 id) public view returns (string memory, string memory, address) {
+        require(id < counter, "No such Tweet");
+        tweet storage t = Tweets[id];
+        require(t.isDeleted == false, "Tweet is deleted");
+        return (t.tweetText, t.tweetImg, t.tweeter);
+    }
+
+    // Method to delete a Tweet
+
+    function deleteTweet(uint tweetId, bool isDeleted) external {
+        require(Tweets[tweetId].tweeter == msg.sender, "You can only delete your own tweet");
+        Tweets[tweetId].isDeleted = isDeleted;
+        emit tweetDeleted(tweetId, isDeleted);
+    }
 }
