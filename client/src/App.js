@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Sidebar from "./components/Sidebar";
+import Rightbar from "./components/Rightbar";
 
 import "./App.css";
 
@@ -21,7 +22,9 @@ function App() {
             <Route path="/settings" element={<Settings />} />
           </Routes>
         </div>
-        <div className="rightBar">RightBar</div>
+        <div className="rightBar">
+          <Rightbar />
+        </div>
       </div>
     </>
   );
