@@ -6,7 +6,7 @@
 .sideBar {
   position: sticky;
   top: 0px;
-  width: calc((100vw - 800px) * 0.45);
+  width: calc((100vw - 800px) * 0.55);
   border-right: 1px solid rgb(63, 63, 63);
   color: white;
   height: 100vh;
