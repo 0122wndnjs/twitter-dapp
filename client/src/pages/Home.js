@@ -3,6 +3,7 @@ import "./Home.css";
 import { Avatar } from "@web3uikit/core";
 import { Image } from "@web3uikit/icons";
 import { defaultImgs } from "../defaultImgs";
+import TweetInFeed from "../components/TweetInFeed";
 
 const Home = () => {
   const inputFile = useRef(null);
@@ -33,13 +34,22 @@ const Home = () => {
           </div>
           <div className="tweetSection">
             <div className="imgDiv" onClick={onImageClick}>
-              <input type="file" ref={inputFile} onChange={changeHandler} style={{display:"none"}} />
-              { selectedImage ? <img src={selectedImage} width={150} /> : <Image fontSize={25} fill="#ffffff" /> }
+              <input
+                type="file"
+                ref={inputFile}
+                onChange={changeHandler}
+                style={{ display: "none" }}
+              />
+              {selectedImage ? (
+                <img src={selectedImage} width={150} />
+              ) : (
+                <Image fontSize={25} fill="#ffffff" />
+              )}
             </div>
             <div className="tweet">Tweet</div>
           </div>
         </div>
-        {/* Feed section */}
+        <TweetInFeed profile={false} />
       </div>
     </>
   );
