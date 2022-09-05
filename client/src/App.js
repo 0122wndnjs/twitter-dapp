@@ -39,6 +39,40 @@ function App() {
     });
   };
 
+  useEffect(() => {
+    if (!provider) {
+      window.alert("No Metamask Installed");
+      window.location.replace("https://metamask.io");
+    }
+
+    connectWallet();
+
+    const handleAccountsChanged = (accounts) => {
+      if (provider.chainId == "0x13881") {
+        infoNotification(accounts[0]);
+      }
+      // Just to prevent reloading twice for the very first time
+      if (JSON.parse(localStorage.getItem("activeAccount")) != null) {
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+      }
+    };
+
+    const handleChainChanged = (chainId) => {
+      if (chainId != "0x13881") {
+        warningNotification();
+      }
+      window.location.reload();
+    };
+
+    const handleDisconnect = () => {};
+
+    provider.on("accountsChanged", handleAccountsChanged);
+    provider.on("chainChanged", handleChainChanged);
+    provider.on("discoonect", handleDisconnect);
+  }, []);
+
   const connectWallet = async () => {
     const web3Modal = new Web3Modal();
     const connection = await web3Modal.connect();
@@ -85,16 +119,73 @@ function App() {
       // Here we will verify if user exists or not in our blockchain or else we will update user details in our contract as well as local storage
       const signer = provider.getSigner();
       const signerAddress = await signer.getAddress();
-      const contract = new ethers.Contract(TwitterContractAddress, TwitterAbi.abi, signer);
+      const contract = new ethers.Contract(
+        TwitterContractAddress,
+        TwitterAbi.abi,
+        signer
+      );
       const getUserDetail = await contract.getUser(signerAddress);
 
-      if (getUserDetail['profileImage']) {
+      if (getUserDetail["profileImg"]) {
         // If user Exists
-
+        window.localStorage.setItem(
+          "activeAccount",
+          JSON.stringify(signerAddress)
+        );
+        window.localStorage.setItem(
+          "userName",
+          JSON.stringify(getUserDetail["name"])
+        );
+        window.localStorage.setItem(
+          "userBio",
+          JSON.stringify(getUserDetail["bio"])
+        );
+        window.localStorage.setItem(
+          "userImage",
+          JSON.stringify(getUserDetail["profileImg"])
+        );
+        window.localStorage.setItem(
+          "userBanner",
+          JSON.stringify(getUserDetail["profileBanner"])
+        );
       } else {
         // First Time user
         // Get a Random avatar and update in the contract
-        
+        setLoadingState(true);
+        let avatar = toonavatar.generate_avatar();
+        let defaultBanner =
+          "https://cloudfront-us-east-1.images.arcpublishing.com/coindesk/RUU74ZL7GNDTFIM27G2QLC7ETQ.jpg";
+        window.localStorage.setItem(
+          "activeAccount",
+          JSON.stringify(signerAddress)
+        );
+        window.localStorage.setItem("userName", JSON.stringify(""));
+        window.localStorage.setItem("userBio", JSON.stringify(""));
+        window.localStorage.setItem("userImage", JSON.stringify(avatar));
+        window.localStorage.setItem(
+          "userBanner",
+          JSON.stringify(defaultBanner)
+        );
+
+        try {
+          const transaction = await contract.updateUser(
+            "",
+            "",
+            avatar,
+            defaultBanner
+          );
+          await transaction.wait();
+        } catch (error) {
+          console.log("ERROR", error);
+          notification({
+            type: "warning",
+            message: "Get Test Matic from Polygon faucet",
+            title: "Require minimum 0.1 MATIC",
+            position: "topR",
+          });
+          setLoadingState(false);
+          return;
+        }
       }
 
       setProvider(provider);
@@ -123,13 +214,17 @@ function App() {
       ) : (
         <div className="loginPage">
           <Twitter fill="#ffffff" fontSize={80} />
-          <Button
-            onClick={null}
-            size="xl"
-            text="Login with Metamask"
-            theme="primary"
-            icon={<Metamask />}
-          />
+          {loading ? (
+            <Loading size={50} spinnerColor="green" />
+          ) : (
+            <Button
+              onClick={connectWallet}
+              size="xl"
+              text="Login with Metamask"
+              theme="primary"
+              icon={<Metamask />}
+            />
+          )}
         </div>
       )}
     </>
