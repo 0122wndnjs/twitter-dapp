@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "./TweetInFeed.css";
-import { defaultImgs } from "../defaultImgs";
 import { Avatar, Loading, useNotification } from "@web3uikit/core";
 import { MessageCircle, Star, Matic, Bin, Calendar } from "@web3uikit/icons";
 import { ethers } from "ethers";
-import Web3Modal, { local } from "web3modal";
+import Web3Modal from "web3modal";
 import { TwitterContractAddress } from "../config";
 import Twitter from "../abi/Twitter.json";
 
@@ -127,7 +126,7 @@ const TweetInFeed = (props) => {
     );
 
   if (loadingState == "loaded" && !tweets.length)
-    return <h1 className="loading">No Tweet Available</h1>;
+    return <h1 className="loading">No Tweet available</h1>;
 
   return (
     <>
@@ -155,7 +154,11 @@ const TweetInFeed = (props) => {
               </div>
               {onlyUser ? (
                 <div className="interactionNums">
-                  <Bin fontSize={20} color="#FF0000" onClick={() => deleteTweet(tweet.id)} />
+                  <Bin
+                    fontSize={20}
+                    color="#FF0000"
+                    onClick={() => deleteTweet(tweet.id)}
+                  />
                 </div>
               ) : (
                 <div className="interactionNums">
