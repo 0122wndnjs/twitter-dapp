@@ -9,7 +9,6 @@ import { TwitterContractAddress } from "../config";
 import Twitter from "../abi/Twitter.json";
 
 const TweetInFeed = (props) => {
-  
   const onlyUser = props.profile;
   let reloadComponent = props.reload;
   const [tweets, setTweets] = useState([]);
@@ -97,6 +96,29 @@ const TweetInFeed = (props) => {
     setLoadingState("loaded");
   }
 
+  async function deleteTweet(tweetId) {
+    setLoadingState("not-loaded");
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(
+      TwitterContractAddress,
+      Twitter.abi,
+      signer
+    );
+    const data = await contract.deleteTweet(tweetId, true);
+    await data.wait();
+    notification({
+      type: "success",
+      title: "Tweet Deleted Successfully",
+      position: "topR",
+      icon: <Bin />,
+    });
+
+    loadMyTweets();
+  }
+
   if (loadingState == "not-loaded")
     return (
       <div className="loading">
@@ -133,7 +155,7 @@ const TweetInFeed = (props) => {
               </div>
               {onlyUser ? (
                 <div className="interactionNums">
-                  <Bin fontSize={20} color="#FF0000" onClick={() => null} />
+                  <Bin fontSize={20} color="#FF0000" onClick={() => deleteTweet(tweet.id)} />
                 </div>
               ) : (
                 <div className="interactionNums">
