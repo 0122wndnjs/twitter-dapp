@@ -5,9 +5,8 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Sidebar from "./components/Sidebar";
 import Rightbar from "./components/Rightbar";
-
 import "./App.css";
-import { Button, useNotification, Loading } from "@babel/core";
+import { Button, useNotification, Loading } from "@web3uikit/core";
 import { Twitter, Metamask } from "@web3uikit/icons";
 import { ethers, utils } from "ethers";
 import Web3Modal from "web3modal";
@@ -70,7 +69,7 @@ function App() {
 
     provider.on("accountsChanged", handleAccountsChanged);
     provider.on("chainChanged", handleChainChanged);
-    provider.on("discoonect", handleDisconnect);
+    provider.on("disconnect", handleDisconnect);
   }, []);
 
   const connectWallet = async () => {
@@ -80,6 +79,7 @@ function App() {
     const getnetwork = await provider.getNetwork();
     const polygonChainId = 80001;
     if (getnetwork.chainId != polygonChainId) {
+      warningNotification();
       try {
         await provider.provider
           .request({
@@ -88,7 +88,7 @@ function App() {
           })
           .then(() => window.location.reload());
       } catch (switchError) {
-        // This error code indicate that the chain has not been added to Metamask
+        // This error code indicates that the chain has not been added to Metamask
         // So will add Polygon network to their metamask
         if (switchError.code === 4902) {
           try {
@@ -116,7 +116,7 @@ function App() {
       }
     } else {
       // It will execute if polygon chain is connected
-      // Here we will verify if user exists or not in our blockchain or else we will update user details in our contract as well as local storage
+      // Here we will verify if user exists or not in our blockchain or else we will update user details in our contract as well as localstorage
       const signer = provider.getSigner();
       const signerAddress = await signer.getAddress();
       const contract = new ethers.Contract(
@@ -127,7 +127,7 @@ function App() {
       const getUserDetail = await contract.getUser(signerAddress);
 
       if (getUserDetail["profileImg"]) {
-        // If user Exists
+        // If user Exsists
         window.localStorage.setItem(
           "activeAccount",
           JSON.stringify(signerAddress)
